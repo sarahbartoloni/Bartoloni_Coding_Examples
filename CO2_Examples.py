@@ -90,7 +90,7 @@ print(temp_constant)
 #  Create Models for ∆pH                                          #
 # *************************************************************** #
 
-#Attempting quatradic first (dpH vs pH)
+#Attempting quadratic first (dpH vs pH)
 polyline = np.linspace(7.2,8.2, 100)
 
 model_0 = np.poly1d(np.polyfit(pH_inputs, dpH[:,0],2))
