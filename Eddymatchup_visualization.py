@@ -26,6 +26,8 @@ from Contour_plot import ctr_plot
 import gsw
 import matplotlib.dates as mdates 
 import Contour_plot_fxn as ctr_plot
+import scipy.io
+import scipy.interpolate as interp
 
 HOMEDIR = os.getcwd() 
 MAINDIR = '/Users/sarahbartoloni/Desktop/GitHub/Saildrone/' 
@@ -346,3 +348,124 @@ plt.scatter(eddy_ID_anticyclonic[lon],
             transform=ccrs.PlateCarree(), 
             s=1, 
             zorder=1001)
+
+
+# ********************************************************************** #
+#  Separate by season                                                    #
+# ********************************************************************** #
+
+# Winter(Jul, Aug, Sep)
+
+eddy_ID_cyc_winter = eddy_ID_cyclonic.loc[(eddy_ID_cyclonic['mon/day/yr'] >= '07/01')
+                                               & (eddy_ID_cyclonic['mon/day/yr'] <= '09/31') 
+                                            ]
+eddy_ID_anti_winter = eddy_ID_anticyclonic.loc[(eddy_ID_anticyclonic['mon/day/yr'] >= '07/01')
+                                               & (eddy_ID_anticyclonic['mon/day/yr'] <= '09/31') 
+                                            ]
+argo_winter = argo.loc[(argo['mon/day/yr'] >= '07/01')
+                        & (argo['mon/day/yr'] <= '09/31') 
+                    ]
+
+# Spring(Oct, Nov, Dec)
+
+eddy_ID_cyc_spring = eddy_ID_cyclonic.loc[(eddy_ID_cyclonic['mon/day/yr'] >= '10/01')
+                                               & (eddy_ID_cyclonic['mon/day/yr'] <= '12/31') 
+                                            ]
+eddy_ID_anti_spring = eddy_ID_anticyclonic.loc[(eddy_ID_anticyclonic['mon/day/yr'] >= '10/01')
+                                               & (eddy_ID_anticyclonic['mon/day/yr'] <= '12/31') 
+                                            ]
+argo_spring = argo.loc[(argo['mon/day/yr'] >= '10/01')
+                        & (argo['mon/day/yr'] <= '12/31') 
+                    ]
+
+# ********************************************************************** #
+#  Example of separating flaots into frontal zones                       #
+# ********************************************************************** #
+
+f = scipy.io.loadmat('data/acc_fronts_Kim_Orsi.mat')
+fronts_m = f['acc_fronts']
+
+#Subantarctic Front
+saf_m = fronts_m['saf'][0][0]
+saf_lon = saf_m[:,0]
+saf_lon[saf_lon<0] = saf_lon[saf_lon<0] + 360
+saf_lat = saf_m[:,1]
+
+#Polar Front
+pf_m = fronts_m['pf'][0][0]
+pf_lon = pf_m[:,0]
+pf_lon[pf_lon<0] = pf_lon[pf_lon<0] + 360
+pf_lat = pf_m[:,1]
+
+#Southern ACC Front
+saccf_m = fronts_m['saccf'][0][0]
+saccf_lon = saccf_m[:,0]
+saccf_lon[saccf_lon<0] = saccf_lon[saccf_lon<0] + 360
+saccf_lat = saccf_m[:,1]
+
+#Southern Boundary Front
+sbdy_m = fronts_m['sbdy'][0][0]
+sbdy_lon = sbdy_m[:,0]
+sbdy_lon[sbdy_lon<0] = sbdy_lon[sbdy_lon<0] + 360
+sbdy_lat = sbdy_m[:,1]
+
+np_eddy_ID_anti_winter_lon = eddy_ID_anti_winter[lon].values
+lon_range = 2
+lon_str = str(lon_range)
+
+front_group = np.empty(len(eddy_ID_anti_winter))
+#loop through your float profiels
+for n in range(len(eddy_ID_anti_winter)):
+    #find index of closest longitude in front position
+    closest_lon_index_pf = np.nanargmin(np.absolute(pf_lon - np_eddy_ID_anti_winter_lon[n]))
+    closest_lon_index_saf = np.nanargmin(np.absolute(saf_lon - np_eddy_ID_anti_winter_lon[n]))
+    closest_lon_index_saccf = np.nanargmin(np.absolute(saccf_lon - np_eddy_ID_anti_winter_lon[n]))
+    #print(closest_lon_index)
+    
+    #compare front lat to float lat
+    lat_compare_pf = pf_lat[closest_lon_index_pf]
+    lat_compare_saf = saf_lat[closest_lon_index_saf]
+    
+    # North of SAF
+    if eddy_ID_anti_winter[lat].values[n] > lat_compare_saf+lon_range:
+        front_group[n] = 1
+    
+    # Between SAF and PF
+    elif (eddy_ID_anti_winter[lat].values[n] < lat_compare_saf+lon_range) & (eddy_ID_anti_winter[lat].values[n] > lat_compare_pf-lon_range):
+        front_group[n] = 2
+    
+    # South of PF
+    elif eddy_ID_anti_winter[lat].values[n] < lat_compare_pf-lon_range:
+        front_group[n] = 3
+        
+    else:
+        front_group[n] = 0
+    front_group[n] = front_group[n]
+
+# ********************************************************************** #
+#  Create Fxn to interpolate Argo profiles to same pressure level        #
+# ********************************************************************** #
+
+def interp_prof (df, subset, pres, var, p_min,p_mx)
+    #df: data frame 
+    #pressure: array of pressure values
+    #var: variable used to interpolate
+    #p_min: pressure minimum
+    
+    #make an array with pressures every 1 db from x to 2000 db
+    p_new = np.arange(p_min,p_max,1) 
+    t_new = np.empty((len(subset),len(p_new)))
+    
+    for n in range (len(subset)):
+        
+        cruise_n = subset['Cruise'].values[n]
+        station_n = subset['Station'].values[n]
+        SOCCOM_prof = df.loc[(df['Cruise']==cruise_n) & (df['Station']==station_n)]
+        
+        f = interp.interp1d(SOCCOM_prof[pres],SOCCOM_prof[var])
+        t_new[n,:] = f(p_new)
+
+
+    t_avg = np.nanmean(t_new, axis = 0)
+
+    return p_new, t_new, t_avg
