@@ -52,6 +52,38 @@ total_borate = 2 #Lee
 
 #Create empty 2D arrays to store variables
 insitu_pH = np.empty((len(pH_inputs),len(temp_outputs)))
+dpH = np.empty((len(pH_inputs),len(temp_outputs)))
+temp_constant = np.empty((len(pH_inputs),len(temp_outputs)))
+
+temp_25 = 25
+
+for n in range(len(pH_inputs)):
+    
+    #Create variables and set them to clear for each pH 
+    pH = pH_inputs[n]
+    output_pH = []
+    pH_change = []
+    pH_temp_change = []
+    
+    for T in temp_outputs:
+        change_temp = pyco2.sys(par1=pH, 
+                                par2=2200, #DIC
+                                par1_type=3, 
+                                par2_type=2, 
+                                opt_pH_scale = 1, #total
+                                salinity=35,
+                                temperature = 25, 
+                                temperature_out=T, 
+                                opt_k_carbonic = eq_constants)
+        output_pH.append(change_temp['pH_out'])
+        pH_change.append(change_temp['pH_out'] - pH)
+        pH_temp_change.append((change_temp['pH_out'] - pH)/(T-temp_25))
+        
+    insitu_pH[n,:] = output_pH
+    dpH[n,:] = pH_change
+    temp_constant[n,:] = pH_temp_change
+        
+print(temp_constant)
 
 
 # *************************************************************** #
@@ -73,41 +105,6 @@ plt.plot(polyline, model_0(polyline), polyline, model_5(polyline), polyline, mod
 print(model_0)
 print(model_5)
 print(model_10)
-
-
-dpH = np.empty((len(pH_inputs),len(temp_outputs)))
-temp_constant = np.empty((len(pH_inputs),len(temp_outputs)))
-
-temp_25 = 25
-
-for n in range(len(pH_inputs)):
-    
-    #Create variables and set them to clear for each pH 
-    pH = pH_inputs[n]
-    output_pH = []
-    pH_change = []
-    pH_temp_change = []
-    
-    for T in temp_outputs:
-        change_temp = pyco2.sys(par1=pH, 
-                                par2=2200,        #DIC
-                                par1_type=3, 
-                                par2_type=2, 
-                                opt_pH_scale = 1, #total sclae
-                                salinity=35,
-                                temperature = 25, 
-                                temperature_out=T, 
-                                opt_k_carbonic = eq_constants)
-        output_pH.append(change_temp['pH_out'])
-        pH_change.append(change_temp['pH_out'] - pH)
-        pH_temp_change.append((change_temp['pH_out'] - pH)/(T-temp_25))
-        
-    insitu_pH[n,:] = output_pH
-    dpH[n,:] = pH_change
-    temp_constant[n,:] = pH_temp_change
-        
-print(temp_constant)
-
 
 
 # *************************************************************** #
