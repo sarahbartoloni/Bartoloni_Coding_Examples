@@ -5,15 +5,15 @@ This repository is intened for viewing purposes only. It represents a compliatio
 
  **Argo_SO_visualization**
 
-This script is a compliation of my work analyzing BGC-Argo floats in the Southern Ocean. This script was done in collaboration with both Dr. Nancy William's lab and Dr. Don Chamber's lab. First, matchups between Argo floats and mesoscale eddies are identified using the eddymatchup_fxn initially created by Dr. Veronica Tamsitt and then modifed by Dr. Jennifer Bonin and myself. The code then examines if a single float encounters the same eddie multiple times throughout its path. The entire BGC-Argo fleet in the Southern Ocean is then visualized in relation to fronts (from Orsie et al 1995) and mesoscale eddie locations. The code then separates the data depending on seaon, zonal regions, and the presence of anicyclonic/cyclonic eddies. Finally, a function is created to interpolate Argo profiles onto the same pressure levels. 
+This script is a compliation of my work analyzing BGC-Argo floats in the Southern Ocean. This script was done in collaboration with both Dr. Nancy William's lab and Dr. Don Chamber's lab and is still a work in progress. First, matchups between Argo floats and mesoscale eddies are identified using the eddymatchup_fxn initially created by Dr. Veronica Tamsitt and then modifed by Dr. Jennifer Bonin and myself. The code then examines if a single float encounters the same eddie multiple times throughout its path. The entire BGC-Argo fleet in the Southern Ocean is then visualized in relation to fronts (from Orsie et al 1995) and mesoscale eddie locations. The code then separates the data depending on seaon, zonal regions, and the presence of anicyclonic/cyclonic eddies. Finally, a function is created to interpolate Argo profiles onto the same pressure levels. 
 
  **CO2_Examples**
 
- Here is an example of code used to process laboratory CO2 system data. This is a collection of code used among a variety of wet lab projects. First, pyCO2SYS is used to convert pH data using equilibrium constants from Dickson and Millero 1987 to total scale pH. Next, CO2Sys is used to convert pH, at in-situ temperatures, to a temperature of 25°C and then saved into a 2D array. Finally, a quadratic model is created to model pH_25 - pH_insitu (∆pH). It should be noted, I perform most modeling and statistical analysis in R.
+Here is an example of code used to process laboratory CO2 system data. This is a collection of code used among a variety of wet lab projects. First, pyCO2SYS is used to convert pH data using equilibrium constants from Dickson and Millero 1987 to total scale pH. Next, CO2Sys is used to convert pH, at in-situ temperatures, to a temperature of 25°C and then saved into a 2D array. Finally, a quadratic model is created to model pH_25 - pH_insitu (∆pH). It should be noted, I perform most modeling and statistical analysis in R.
  
  **Contour_plot_fxn**
 
- A function was created to make a contour plot using any three variables in the Argo float dataset. This function is used in Argo_SO_visualization.
+A function was created to make a contour plot using any three variables in the Argo float dataset. This function is used in Argo_SO_visualization.
 
  **eddmatchup_fxn**
 
