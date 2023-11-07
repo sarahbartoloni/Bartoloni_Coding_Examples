@@ -5,6 +5,8 @@ Created on Tue Nov  7 15:02:48 2023
 
 @author: sarahbartoloni
 """
+#Creates tricontour plots separating cylonic and anticyclonic eddies
+#This function allows for any three variables to be plotted together
 
 import pandas as pd 
 import numpy as np
