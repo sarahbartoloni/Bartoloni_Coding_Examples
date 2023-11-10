@@ -162,6 +162,9 @@ for imon in range (0,11,1):
 # Save varaible arrays as npy files                             # 
 # ************************************************************* #   
 
+np.save(DATADIR+ 'temp.npy', temp)
+np.save(DATADIR+ 'ox.npy', ox)
+np.save(DATADIR+ 'sal.npy', sal)
 np.save(DATADIR+ 'nitrate.npy', nitrate)
 #Use np.load to load into new file
 
