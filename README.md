@@ -10,8 +10,11 @@ This script is a compilation of my work analyzing BGC-Argo floats in the Souther
  **CO2_Examples**
 
 Here is an example of code used to process laboratory CO2 system data. This is a collection of code used among a variety of wet lab projects. First, pyCO2SYS is used to convert pH data using equilibrium constants from Dickson and Millero 1987 to total scale pH. Next, CO2Sys is used to convert pH, at in-situ temperatures, to a temperature of 25°C and then saved into a 2D array. Finally, a quadratic model is created to model pH_25 - pH_insitu (∆pH). It should be noted, I perform most modeling and statistical analysis in R.
- 
- **Contour_plot_fxn**
+
+**Load_WOA_as_netCDF**
+This script loads World Ocean Atlas (WOA) data for Temp, Oxygen, and Nitrate and converts it into gridded arrays.
+
+**Contour_plot_fxn**
 
 A function was created to make a contour plot using any three variables in the Argo float dataset. This function is used in Argo_SO_visualization.
 
